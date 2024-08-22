@@ -4,11 +4,15 @@ const prisma = new PrismaClient();
 
 const GetUserAuth = async (token) => {
     try {
+        if (!process.env.JWT_SECRET) {
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+
         if (!token) {
             throw new Error("Token not provided");
         }
 
-        const decoded = jwt.verify(token, "4e1a3f9e18ecfcb4c8a7245d6a3e9062c1c6d5b2953b2c8a17e646d647d6e3a1");
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id;
 
         const user = await prisma.user.findUnique({

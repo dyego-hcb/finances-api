@@ -4,6 +4,10 @@ const UserService = require('../Services/UserServices');
 jest.mock('../Services/UserServices');
 
 describe('UserController Register Tests', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     it('should successfully register a user with valid data', async () => {
         UserService.registerUser.mockResolvedValue({
             id: '1',

@@ -1,12 +1,16 @@
 const jwt = require("jsonwebtoken");
 
 const CreateUserToken = async (user, req, res) => {
+    if (!process.env.JWT_SECRET) {
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+
     const token = jwt.sign(
         {
             name: user.name,
             id: user.id
         },
-        "4e1a3f9e18ecfcb4c8a7245d6a3e9062c1c6d5b2953b2c8a17e646d647d6e3a1",
+        process.env.JWT_SECRET,
         { expiresIn: '1h' }
     );
 
