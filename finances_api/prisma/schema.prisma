@@ -7,19 +7,82 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id        Int       @id @default(autoincrement())
+model Store {
+  id        Int         @id @default(autoincrement())
   name      String
-  cpf       String    @unique
-  birthDate String
-  email     String    @unique
+  cnpj      String      @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @default(now())
+  products  Product[]
+  users     User[]      // Added back relation
+  addresses StoreHaveAddress[] // Added back relation
+  categories Category[] // Added back relation
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  cpf       String   @unique
+  birthDate DateTime
+  email     String   @unique
   password  String
-  userType  UserType  @default(USER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  storeId   Int
+  store     Store    @relation(fields: [storeId], references: [id])
+  userType  UserType @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 enum UserType {
   USER
   ADMIN
+}
+
+model Address {
+  id          Int      @id @default(autoincrement())
+  street      String
+  neighborhood String
+  number      String
+  city        String
+  state       String
+  zipCode     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  stores      StoreHaveAddress[] // Added back relation
+}
+
+model StoreHaveAddress {
+  id        Int      @id @default(autoincrement())
+  storeId   Int
+  store     Store    @relation(fields: [storeId], references: [id])
+  addressId Int
+  address   Address  @relation(fields: [addressId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String
+  storeId   Int
+  store     Store    @relation(fields: [storeId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  products  Product[]
+}
+
+model Product {
+  id             Int      @id @default(autoincrement())
+  name           String
+  brand          String
+  description    String
+  value          Decimal  @default(0.0)
+  stockQuantity  Int
+  photos         String
+  categoryId     Int
+  category       Category @relation(fields: [categoryId], references: [id])
+  storeId        Int
+  store          Store    @relation(fields: [storeId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
 }
