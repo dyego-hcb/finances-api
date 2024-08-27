@@ -52,27 +52,6 @@ class UserController {
         }
     }
 
-    static async addUserToStore(req, res) {
-        try {
-            const { userId, storeId } = req.body;
-
-            if (!userId || !storeId) {
-                return res.status(422).json({ message: "User ID and Store ID are required" });
-            }
-
-            const user = await UserService.addUserToStore(userId, storeId);
-
-            if (!user) {
-                return res.status(404).json({ message: "User or Store not found!" });
-            }
-
-            res.status(200).json(user);
-        } catch (error) {
-            console.error('Error in UserController.addUserToStore:', error);
-            res.status(500).json({ error: 'An error occurred while adding the user to the store' });
-        }
-    }
-
     static async loginUser(req, res) {
         try {
             const { email, password } = req.body;
