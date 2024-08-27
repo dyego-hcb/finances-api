@@ -5,7 +5,7 @@ class UpdateUserDTO {
         this.birthDate = birthDate;
         this.email = email;
         this.password = password;
-        this.updatedAt = updatedAt;
+        this.updatedAt = new Date();
     }
 }
 

@@ -34,9 +34,32 @@ class UserStoreController {
         }
     }
 
+    static async getAllStoreToUser(req, res) {
+        try {
+            const { userId } = parseInt(req.params.userId, 10);
+            const userStores = await UserStoreServices.getAllStoreToUser(userId);
+
+            if (!userStores || userStores.length === 0) {
+                return res.status(404).json({ message: "No user-store records found!" });
+            }
+
+            const userStoreDTOs = userStores.map(userStore => new GetUserStoreDTO(
+                userStore.storeId,
+                userStore.userId,
+                userStore.createdAt,
+                userStore.updatedAt,
+            ));
+
+            res.status(200).json(userStoreDTOs);
+        } catch (error) {
+            console.error('Error in UserStoreController.getAllUserToStore:', error);
+            res.status(500).json({ error: 'An error occurred while retrieving user-store records' });
+        }
+    }
+
     static async getAllUserToStore(req, res) {
         try {
-            const { storeId } = parseInt(req.params.userStoreId, 10);
+            const { storeId } = parseInt(req.params.storeId, 10);
             const userStores = await UserStoreServices.getAllUserToStore(storeId);
 
             if (!userStores || userStores.length === 0) {

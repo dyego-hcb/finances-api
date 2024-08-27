@@ -25,22 +25,6 @@ class UserService {
         }
     }
 
-    static async addUserToStore(userId, storeId) {
-        try {
-            const userStore = await prisma.userHaveStore.create({
-                data: {
-                    userId,
-                    storeId,
-                },
-            });
-
-            return userStore;
-        } catch (error) {
-            console.error('Error in UserService.addUserToStore:', error);
-            throw new Error('Error adding user to store');
-        }
-    }
-
     static async authenticateUser(loginUserDTO) {
         try {
             const { email, password } = loginUserDTO;

@@ -6,7 +6,7 @@ class UpdateAddressDTO {
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
-        this.updatedAt = updatedAt;
+        this.updatedAt = new Date();
     }
 }
 
