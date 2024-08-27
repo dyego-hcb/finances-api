@@ -11,10 +11,14 @@ app.use(express.static('public'));
 
 const HelloWordRoutes = require('./Routes/HelloWordRoutes');
 const UserRoutes = require('./Routes/UserRoutes');
+const StoreRoutes = require('./Routes/StoreRoutes');
+const AddressRoutes = require('./Routes/AddressRoutes');
 
 app.use('/check-connectios', HelloWordRoutes);
 app.use('/user', UserRoutes);
+app.use('/store', StoreRoutes);
+app.use('/address', AddressRoutes);
 
 app.listen(5000, () => {
-    console.log('Servidor rodando em http://localhost:5000');
+    console.log('Server is runnin on http://localhost:5000');
 });

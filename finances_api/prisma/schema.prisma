@@ -14,9 +14,9 @@ model Store {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @default(now())
   products  Product[]
-  users     User[]      // Added back relation
-  addresses StoreHaveAddress[] // Added back relation
-  categories Category[] // Added back relation
+  users     UserHaveStore[]
+  addresses StoreHaveAddress[]
+  categories Category[]
 }
 
 model User {
@@ -26,16 +26,25 @@ model User {
   birthDate DateTime
   email     String   @unique
   password  String
-  storeId   Int
-  store     Store    @relation(fields: [storeId], references: [id])
   userType  UserType @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+  stores      UserHaveStore[]
 }
 
 enum UserType {
   USER
   ADMIN
+}
+
+model UserHaveStore {
+  id        Int      @id @default(autoincrement())
+  storeId   Int
+  store     Store    @relation(fields: [storeId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Address {
@@ -48,7 +57,7 @@ model Address {
   zipCode     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
-  stores      StoreHaveAddress[] // Added back relation
+  stores      StoreHaveAddress[]
 }
 
 model StoreHaveAddress {

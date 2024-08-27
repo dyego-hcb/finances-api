@@ -11,6 +11,12 @@ const router = express.Router();
 router.post('/register', UserController.registerUser);
 router.post('/login', UserController.loginUser);
 router.get('/auth', CheckToken, UserController.getAuthenticatedUser);
+router.get('/get/:id', UserController.getUserById);
+router.get('/all', UserController.getAllUsers);
 router.put('/auth/update', CheckToken, UserController.updateAuthenticatedUser);
+router.put('/update/:id', UserController.updateUserById);
+router.delete('/auth/delete', CheckToken, UserController.deleteAuthenticatedUser);
+router.delete('/delete/:id', UserController.deleteUserById);
+router.post('/store/add-user', UserController.addUserToStore);
 
 module.exports = router;

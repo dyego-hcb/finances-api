@@ -11,7 +11,7 @@ class UserService {
                 data: {
                     name,
                     cpf,
-                    birthDate,
+                    birthDate: new Date(birthDate).toISOString(),
                     email,
                     password,
                     createdAt,
@@ -22,6 +22,22 @@ class UserService {
         } catch (error) {
             console.error('Error in UserService.registerUser:', error);
             throw new Error('Error creating user');
+        }
+    }
+
+    static async addUserToStore(userId, storeId) {
+        try {
+            const userStore = await prisma.userHaveStore.create({
+                data: {
+                    userId,
+                    storeId,
+                },
+            });
+
+            return userStore;
+        } catch (error) {
+            console.error('Error in UserService.addUserToStore:', error);
+            throw new Error('Error adding user to store');
         }
     }
 
@@ -50,14 +66,36 @@ class UserService {
         }
     }
 
-    static async updateUser(userId, updateUserDTO) {
+    static async getAllUsers() {
+        try {
+            const users = await prisma.user.findMany();
+            return users;
+        } catch (error) {
+            console.error('Error in UserService.getAllUsers:', error);
+            throw new Error('Error fetching users');
+        }
+    }
+
+    static async getUserById(userId) {
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+            });
+            return user;
+        } catch (error) {
+            console.error('Error in UserService.getUserById:', error);
+            throw new Error('Error retrieving user by ID');
+        }
+    }
+
+    static async updateAuthenticateUser(userId, updateUserDTO) {
         try {
             const updatedUser = await prisma.user.update({
                 where: { id: userId },
                 data: {
                     name: updateUserDTO.name,
                     cpf: updateUserDTO.cpf,
-                    birthDate: updateUserDTO.birthDate,
+                    birthDate: new Date(updateUserDTO.birthDate).toISOString(),
                     email: updateUserDTO.email,
                     password: updateUserDTO.password,
                     updatedAt: updateUserDTO.updatedAt,
@@ -67,6 +105,53 @@ class UserService {
             return updatedUser;
         } catch (error) {
             throw new Error(`Failed to update user: ${error.message}`);
+        }
+    }
+
+    static async updateUserById(userId, updateUserDTO) {
+        try {
+            const updatedUser = await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    name: updateUserDTO.name,
+                    cpf: updateUserDTO.cpf,
+                    birthDate: new Date(updateUserDTO.birthDate).toISOString(),
+                    email: updateUserDTO.email,
+                    password: updateUserDTO.password,
+                    updatedAt: updateUserDTO.updatedAt,
+                },
+            });
+
+            return updatedUser;
+        } catch (error) {
+            console.error('Error in UserService.updateUserById:', error);
+            throw new Error('Error updating user');
+        }
+    }
+
+    static async deleteUserById(userId) {
+        try {
+            const user = await prisma.user.delete({
+                where: { id: userId },
+            });
+
+            return user;
+        } catch (error) {
+            console.error('Error in UserService.deleteUserById:', error);
+            throw new Error('Error deleting user');
+        }
+    }
+
+    static async deleteAuthenticatedUser(userId) {
+        try {
+            const user = await prisma.user.delete({
+                where: { id: userId },
+            });
+
+            return user;
+        } catch (error) {
+            console.error('Error in UserService.deleteAuthenticatedUser:', error);
+            throw new Error('Error deleting authenticated user');
         }
     }
 }

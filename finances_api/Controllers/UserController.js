@@ -4,8 +4,8 @@ const UserService = require('../Services/UserServices');
 // DTOS
 const CreateUserDTO = require('../DTOS/UserDTO/CreateUserDTO');
 const LoginUserDTO = require('../DTOS/UserDTO/LoginUserDTO');
-const GetUserAuthDTO = require('../DTOS/UserDTO/GetUserAuthDTO');
-const UpdateUserAuthDTO = require('../DTOS/UserDTO/UpdateUserAuthDTO');
+const GetUserDTO = require('../DTOS/UserDTO/GetUserDTO');
+const UpdateUserDTO = require('../DTOS/UserDTO/UpdateUserDTO');
 
 // UTILS
 const isValidCPF = require('../Utils/FieldsValidade/ValidateCPF');
@@ -52,6 +52,27 @@ class UserController {
         }
     }
 
+    static async addUserToStore(req, res) {
+        try {
+            const { userId, storeId } = req.body;
+
+            if (!userId || !storeId) {
+                return res.status(422).json({ message: "User ID and Store ID are required" });
+            }
+
+            const user = await UserService.addUserToStore(userId, storeId);
+
+            if (!user) {
+                return res.status(404).json({ message: "User or Store not found!" });
+            }
+
+            res.status(200).json(user);
+        } catch (error) {
+            console.error('Error in UserController.addUserToStore:', error);
+            res.status(500).json({ error: 'An error occurred while adding the user to the store' });
+        }
+    }
+
     static async loginUser(req, res) {
         try {
             const { email, password } = req.body;
@@ -79,19 +100,105 @@ class UserController {
 
             const user = await GetUserAuth(token);
 
-            const userAuthDTO = new GetUserAuthDTO(
+            if (!user) {
+                return res.status(404).json({ message: "User not found!" });
+            }
+
+            const userAuthDTO = new GetUserDTO(
                 user.name,
                 user.cpf,
                 user.birthDate,
                 user.email,
                 user.password,
-                user.createdAt
+                user.createdAt,
+                user.updatedAt
             );
 
             res.status(200).json(userAuthDTO);
         } catch (error) {
             console.error('Error in UserController.getAuthenticatedUser:', error);
             res.status(401).json({ message: 'Failed to authenticate user' });
+        }
+    }
+
+    static async getAllUsers(req, res) {
+        try {
+            const users = await UserService.getAllUsers();
+
+            if (!users) {
+                return res.status(404).json({ message: "Users not found!" });
+            }
+
+            const userDTOs = users.map(user => {
+                return new GetUserDTO(
+                    user.name,
+                    user.cpf,
+                    user.birthDate,
+                    user.email,
+                    user.password,
+                    user.createdAt,
+                    user.updatedAt
+                );
+            });
+
+            res.status(200).json(userDTOs);
+        } catch (error) {
+            console.error('Error in UserController.getAllUsers:', error);
+            res.status(500).json({ error: 'An error occurred while retrieving users' });
+        }
+    }
+
+    static async getUserById(req, res) {
+        try {
+            const userId = parseInt(req.params.id, 10);
+
+            const user = await UserService.getUserById(userId);
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found!" });
+            }
+
+            const userByIdDTO = new GetUserDTO(
+                user.name,
+                user.cpf,
+                user.birthDate,
+                user.email,
+                user.password,
+                user.createdAt,
+                user.updatedAt
+            );
+
+            res.status(200).json(userByIdDTO);
+        } catch (error) {
+            console.error('Error in UserController.findUserById:', error);
+            res.status(500).json({ error: 'An error occurred while retrieving the user' });
+        }
+    }
+
+    static async updateUserById(req, res) {
+        try {
+            const userId = parseInt(req.params.id, 10);
+            const { name, cpf, birthDate, email, password } = req.body;
+
+            const updateUserDTO = new UpdateUserDTO(
+                name,
+                cpf,
+                birthDate,
+                email,
+                password,
+                new Date()
+            );
+
+            const updatedUser = await UserService.updateUserById(userId, updateUserDTO);
+
+            if (!updatedUser) {
+                return res.status(404).json({ message: "User not found!" });
+            }
+
+            res.status(200).json(updatedUser);
+        } catch (error) {
+            console.error('Error in UserController.updateUserById:', error);
+            res.status(500).json({ error: 'An error occurred while updating the user' });
         }
     }
 
@@ -127,7 +234,7 @@ class UserController {
                 return res.status(422).json({ message: "Both old and new passwords must be provided together !!" });
             }
 
-            const updateUserDTO = new UpdateUserAuthDTO(
+            const updateUserDTO = new UpdateUserDTO(
                 name || user.name,
                 cpf || user.cpf,
                 birthDate || user.birthDate,
@@ -136,12 +243,51 @@ class UserController {
                 new Date()
             );
 
-            const updatedUser = await UserService.updateUser(user.id, updateUserDTO);
+            const updatedUser = await UserService.updateAuthenticateUser(user.id, updateUserDTO);
+
+            if (!updatedUser) {
+                return res.status(404).json({ message: "User not found!" });
+            }
 
             res.status(200).json(updatedUser);
         } catch (error) {
             console.error('Error in UserController.updateAuthenticatedUser:', error);
             res.status(500).json({ error: 'An error occurred while updating the user' });
+        }
+    }
+
+    static async deleteUserById(req, res) {
+        try {
+            const userId = parseInt(req.params.id, 10);
+
+            const user = await UserService.deleteUserById(userId);
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found!" });
+            }
+
+            res.status(200).json({ message: "User deleted successfully!" });
+        } catch (error) {
+            console.error('Error in UserController.deleteUserById:', error);
+            res.status(500).json({ error: 'An error occurred while deleting the user' });
+        }
+    }
+
+    static async deleteAuthenticatedUser(req, res) {
+        try {
+            const token = req.headers.authorization.split(' ')[1];
+            const user = await GetUserAuth(token);
+
+            const deletedUser = await UserService.deleteAuthenticatedUser(user.id);
+
+            if (!deletedUser) {
+                return res.status(404).json({ message: "User not found!" });
+            }
+
+            res.status(200).json({ message: "User deleted successfully!" });
+        } catch (error) {
+            console.error('Error in UserController.deleteAuthenticatedUser:', error);
+            res.status(500).json({ error: 'An error occurred while deleting the user' });
         }
     }
 }
