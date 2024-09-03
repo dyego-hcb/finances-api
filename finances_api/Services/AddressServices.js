@@ -1,20 +1,21 @@
+// /Services/AddressService.js
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 class AddressService {
     static async registerAddress(registerAddressDTO) {
         try {
-            const { street, neighborhood, number, city, state, zipCode, createdAt } = registerAddressDTO;
-
             const address = await prisma.address.create({
                 data: {
-                    street,
-                    neighborhood,
-                    number,
-                    city,
-                    state,
-                    zipCode,
-                    createdAt
+                    street: registerAddressDTO.street,
+                    neighborhood: registerAddressDTO.neighborhood,
+                    number: registerAddressDTO.number,
+                    city: registerAddressDTO.city,
+                    state: registerAddressDTO.state,
+                    zipCode: registerAddressDTO.zipCode,
+                    createdAt: registerAddressDTO.createdAt,
+                    updatedAt: registerAddressDTO.updatedAt
                 },
             });
 
@@ -59,6 +60,7 @@ class AddressService {
                     city: addressDTO.city,
                     state: addressDTO.state,
                     zipCode: addressDTO.zipCode,
+                    createdAt: addressDTO.createdAt,
                     updatedAt: addressDTO.updatedAt
                 },
             });
@@ -77,7 +79,7 @@ class AddressService {
 
             return address;
         } catch (error) {
-            console.error('Error in AddressService.updateAddressById:', error);
+            console.error('Error in AddressService.deleteAddressById:', error);
             throw new Error('Error deleting user');
         }
     }

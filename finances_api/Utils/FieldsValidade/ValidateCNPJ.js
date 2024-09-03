@@ -1,3 +1,5 @@
+// /Utils/FieldsValidade/ValidateCNPJ.js
+
 const isValidCNPJ = (cnpj) => {
     cnpj = cnpj.replace(/[^\d]+/g, '');
 

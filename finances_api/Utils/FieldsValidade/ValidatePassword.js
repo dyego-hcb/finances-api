@@ -1,3 +1,5 @@
+// /Utils/FieldsValidade/ValidatePassword.js
+
 const isValidPassword = (password) => {
     const minLength = password.length >= 8;
     const hasUpperCase = /[A-Z]/.test(password);

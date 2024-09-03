@@ -1,30 +1,30 @@
-// /Utils/Authenticate/CheckToken.js
+// /Utils/Authenticate/CheckAuth.js
 
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 const GetToken = require('./GetToken');
 
-const CheckToken = (req, res, next) => {
+const CheckAuth = (req, res, next) => {
     if (!process.env.JWT_SECRET) {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 
     if (!req.headers.authorization) {
-        return res.status(401).json({ message: "Denied Access !!" });
+        return next();
     }
 
     const token = GetToken(req);
 
     if (!token) {
-        return res.status(401).json({ message: "Denied Access !!" });
+        return next();
     }
 
     try {
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         req.user = verified;
-        next();
+        res.status(403).json({ message: "Access Forbidden: You are already logged in" });
     } catch (err) {
-        res.status(400).json({ message: "Invalid Token !!" });
+        next();
     }
-}
+};
 
-module.exports = CheckToken;
+module.exports = CheckAuth;

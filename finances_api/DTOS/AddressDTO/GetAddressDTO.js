@@ -1,3 +1,5 @@
+// /DTOS/AddressDTO/GetAddressDTO.js
+
 class GetAddressDTO {
     constructor(street, neighborhood, number, city, state, zipCode, createdAt, updatedAt) {
         this.street = street;

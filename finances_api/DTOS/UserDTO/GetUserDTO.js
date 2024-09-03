@@ -1,3 +1,5 @@
+// /DTOS/UserDTO/GetUserDTO.js
+
 class GetUserDTO {
     constructor(name, cpf, birthDate, email, password, createdAt, updatedAt) {
         this.name = name;

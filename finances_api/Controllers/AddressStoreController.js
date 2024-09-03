@@ -30,12 +30,12 @@ class AddressStoreController {
                 return res.status(404).json({ message: "Store not found!" });
             }
 
-            const addressStore = await AddressStoreServices.addAddressToStore(addressId, storeId);
-
             const registerAddressStoreDTO = new CreateAddressStoreDTO(
-                addressStore.storeId,
-                addressStore.addressId,
+                storeId,
+                addressId,
             );
+
+            const addressStore = await AddressStoreServices.addAddressToStore(registerAddressStoreDTO);
 
             res.status(200).json(registerAddressStoreDTO);
         } catch (error) {

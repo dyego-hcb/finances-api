@@ -1,3 +1,5 @@
+// /Utils/FieldsValidade/ValidateZipCode.js
+
 const isValidZipCode = (zipCode) => {
     zipCode = zipCode.replace(/[^\d]+/g, '');
 

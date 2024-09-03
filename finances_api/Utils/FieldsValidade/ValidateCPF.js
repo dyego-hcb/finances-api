@@ -1,3 +1,5 @@
+// /Utils/FieldsValidade/ValidateCPF.js
+
 const isValidCPF = (cpf) => {
     cpf = cpf.replace(/[^\d]+/g, '');
 

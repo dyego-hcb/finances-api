@@ -1,3 +1,5 @@
+// /DTOS/StoreDTO/GetStoreDTO.js
+
 class GetStoreDTO {
     constructor(name, cnpj, createdAt, updatedAt) {
         this.name = name;

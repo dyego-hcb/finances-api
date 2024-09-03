@@ -1,3 +1,5 @@
+// /DTOS/UserStoreDTO/GetUserStoreDTO.js
+
 class GetUserStoreDTO {
     constructor(storeId, userId, createdAt, updatedAt) {
         this.storeId = storeId;

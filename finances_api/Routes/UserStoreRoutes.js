@@ -15,6 +15,6 @@ router.get('/get-all/user-store/:storeId', CheckTypeUserAuth('ADMIN'), UserStore
 router.get('/get-all/store-user/:userId', CheckTypeUserAuth('ADMIN'), UserStoreController.getAllStoreToUser);
 router.get('/get/user-store/:userStoreId/:userId', CheckTypeUserAuth('ADMIN'), UserStoreController.getUserToStoreById);
 router.put('/edit/user-store/:userStoreId', CheckTypeUserAuth('ADMIN'), UserStoreController.updateUserToStoreById);
-router.delete('/delete/user-store/:userStoreId', UserStoreController.deleteUserToStoreById);
+router.delete('/delete/user-store/:userStoreId', CheckTypeUserAuth('ADMIN'), UserStoreController.deleteUserToStoreById);
 
 module.exports = router;

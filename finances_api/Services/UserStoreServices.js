@@ -1,13 +1,15 @@
+// /Services/UserStoreServices.js
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 class UserStoreServices {
-    static async addUserToStore(userId, storeId) {
+    static async addUserToStore(registerUserStoreDTO) {
         try {
             const userStore = await prisma.userHaveStore.create({
                 data: {
-                    userId,
-                    storeId,
+                    userId: registerUserStoreDTO.userId,
+                    storeId: registerUserStoreDTO.storeId,
                 },
             });
 
@@ -46,12 +48,11 @@ class UserStoreServices {
         }
     }
 
-
     static async getUserToStoreById(userStoreId, userId) {
         try {
             const userStore = await prisma.userHaveStore.findFirst({
                 where: {
-                    storeId: userStoreId,
+                    id: userStoreId,
                     userId: userId,
                 },
             });
@@ -93,10 +94,10 @@ class UserStoreServices {
         }
     }
 
-    static async deleteUserToStoreById(userStoreId) {
+    static async deleteUserToStoreById(storeUserId) {
         try {
             const userStore = await prisma.userHaveStore.delete({
-                where: { id: userStoreId },
+                where: { id: storeUserId },
             });
 
             return userStore;

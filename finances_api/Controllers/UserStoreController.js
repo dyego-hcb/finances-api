@@ -37,12 +37,12 @@ class UserStoreController {
                 }
             }
 
-            const userStore = await UserStoreServices.addUserToStore(userId, storeId);
-
             const registerUserStoreDTO = new CreateUserStoreDTO(
-                userStore.storeId,
-                userStore.userId,
+                storeId,
+                userId,
             );
+
+            const userStore = await UserStoreServices.addUserToStore(registerUserStoreDTO);
 
             res.status(200).json(registerUserStoreDTO);
         } catch (error) {

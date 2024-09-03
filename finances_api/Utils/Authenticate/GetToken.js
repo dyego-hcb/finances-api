@@ -1,3 +1,5 @@
+// /Utils/Authenticate/GetToken.js
+
 const GetToken = (req) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
