@@ -1,8 +1,13 @@
+// /Controllers/UserStoreController.js
+
+// SERVICES
 const UserStoreServices = require('../Services/UserStoreServices');
+const UserServices = require('../Services/UserServices');
+const StoreServices = require('../Services/StoreServices');
 
 // DTOS
-const RegisterUserStoreDTO = require('../DTOS/UserStoreDTO/RegisterUserStoreDTO');
-const EditUserStoreDTO = require('../DTOS/UserStoreDTO/EditUserStoreDTO');
+const CreateUserStoreDTO = require('../DTOS/UserStoreDTO/CreateUserStoreDTO');
+const UpdateUserStoreDTO = require('../DTOS/UserStoreDTO/UpdateUserStoreDTO');
 const GetUserStoreDTO = require('../DTOS/UserStoreDTO/GetUserStoreDTO');
 
 class UserStoreController {
@@ -15,16 +20,28 @@ class UserStoreController {
                 return res.status(422).json({ message: "User ID and Store ID are required" });
             }
 
-            const userStore = await UserStoreServices.addUserToStore(userId, storeId);
-
-            if (!userStore) {
-                return res.status(404).json({ message: "User or Store not found!" });
+            const user = await UserServices.getUserById(userId);
+            if (!user) {
+                return res.status(404).json({ message: "User not found!" });
             }
 
-            const registerUserStoreDTO = new RegisterUserStoreDTO(
+            const store = await StoreServices.getStoreById(storeId);
+            if (!store) {
+                return res.status(404).json({ message: "Store not found!" });
+            }
+
+            if (user.userType === 'USER') {
+                const storeCount = await UserStoreServices.getAllStoreToUser(userId);
+                if (storeCount.length > 0) {
+                    return res.status(422).json({ message: "User as type USER, and can't be associated with more than one store" });
+                }
+            }
+
+            const userStore = await UserStoreServices.addUserToStore(userId, storeId);
+
+            const registerUserStoreDTO = new CreateUserStoreDTO(
                 userStore.storeId,
                 userStore.userId,
-                userStore.createdAt,
             );
 
             res.status(200).json(registerUserStoreDTO);
@@ -36,7 +53,7 @@ class UserStoreController {
 
     static async getAllStoreToUser(req, res) {
         try {
-            const { userId } = parseInt(req.params.userId, 10);
+            const userId = parseInt(req.params.userId, 10);
             const userStores = await UserStoreServices.getAllStoreToUser(userId);
 
             if (!userStores || userStores.length === 0) {
@@ -59,7 +76,7 @@ class UserStoreController {
 
     static async getAllUserToStore(req, res) {
         try {
-            const { storeId } = parseInt(req.params.storeId, 10);
+            const storeId = parseInt(req.params.storeId, 10);
             const userStores = await UserStoreServices.getAllUserToStore(storeId);
 
             if (!userStores || userStores.length === 0) {
@@ -114,10 +131,29 @@ class UserStoreController {
                 return res.status(422).json({ message: "User ID and Store ID are required" });
             }
 
-            const editUserStoreDTO = new EditUserStoreDTO(
+            const user = await UserServices.getUserById(userId);
+            if (!user) {
+                return res.status(404).json({ message: "User not found!" });
+            }
+
+            const store = await StoreServices.getStoreById(storeId);
+            if (!store) {
+                return res.status(404).json({ message: "Store not found!" });
+            }
+
+            const userHaveStore = await UserStoreServices.getAllStoreToUser(user.id);
+            if (userHaveStore.length === 0) {
+                throw new Error("User does not have any registered store. Operation not permitted.");
+            }
+
+            const storeExists = userHaveStore.some(store => store.id === storeId);
+            if (!storeExists) {
+                throw new Error("User is not authorized to modify this store. Operation not permitted.");
+            }
+
+            const editUserStoreDTO = new UpdateUserStoreDTO(
                 storeId,
-                userId,
-                new Date()
+                userId
             );
 
             const updatedUserStore = await UserStoreServices.updateUserToStoreById(userStoreId, editUserStoreDTO);
@@ -136,8 +172,6 @@ class UserStoreController {
     static async deleteUserToStoreById(req, res) {
         try {
             const userStoreId = parseInt(req.params.userStoreId, 10);
-
-            console.log('userStoreId: ' + userStoreId)
 
             const deletedUserStore = await UserStoreServices.deleteUserToStoreById(userStoreId);
 

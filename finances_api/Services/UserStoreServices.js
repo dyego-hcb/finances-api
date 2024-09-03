@@ -18,6 +18,20 @@ class UserStoreServices {
         }
     }
 
+    static async getAllStoreToUser(userId) {
+        try {
+            const storeUser = await prisma.userHaveStore.findMany({
+                where: { userId: userId },
+            });
+
+            return storeUser;
+
+        } catch (error) {
+            console.error('Error in UserStoreServices.getAllStoreToUser:', error);
+            throw new Error('Error retrieving user-store records');
+        }
+    }
+
     static async getAllUserToStore(storeId) {
         try {
             const userStore = await prisma.userHaveStore.findMany({

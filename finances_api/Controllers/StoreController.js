@@ -1,3 +1,6 @@
+// /Controllers/StoreController.js
+
+// SERVICES
 const StoreService = require('../Services/StoreServices');
 
 // DTOS
@@ -20,7 +23,7 @@ class StoreController {
                 return res.status(422).json({ message: "Field cnpj is mandatory and must be valid !!" });
             }
 
-            const registerStoreDTO = new CreateStoreDTO(name, cnpj, new Date());
+            const registerStoreDTO = new CreateStoreDTO(name, cnpj);
 
             const store = await StoreService.registerStore(registerStoreDTO);
 
@@ -89,7 +92,7 @@ class StoreController {
                 return res.status(422).json({ message: "Field cnpj is mandatory and must be valid !!" });
             }
 
-            const updatedStoreDTO = new UpdateStoreDTO(name, cnpj, new Date());
+            const updatedStoreDTO = new UpdateStoreDTO(name, cnpj);
 
             const store = await StoreService.updateStoreById(storeId, updatedStoreDTO);
 

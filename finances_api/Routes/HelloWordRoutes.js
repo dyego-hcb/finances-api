@@ -1,4 +1,8 @@
+// /Routes/HelloWordRoutes.js
+
 const router = require('express').Router();
+
+// CONTROLLER
 const HelloWordController = require('../Controllers/HelloWordController');
 
 router.get('/hello-word-api', HelloWordController.checkAPIConnection);

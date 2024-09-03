@@ -1,3 +1,6 @@
+// /Controllers/AddressController.js
+
+// SERVICES
 const AddressService = require('../Services/AddressServices');
 
 // DTOS
@@ -32,7 +35,7 @@ class AddressController {
                 return res.status(422).json({ message: "Field zip code is mandatory and must be a valid zip code !!" });
             }
 
-            const registerAddressDTO = new CreateAddressDTO(street, neighborhood, number, city, state, zipCode, new Date());
+            const registerAddressDTO = new CreateAddressDTO(street, neighborhood, number, city, state, zipCode);
             const address = await AddressService.registerAddress(registerAddressDTO);
             res.status(201).json(address);
         } catch (error) {

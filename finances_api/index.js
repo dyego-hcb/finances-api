@@ -1,3 +1,5 @@
+// /index.js
+
 const express = require('express');
 const cors = require('cors');
 
@@ -14,12 +16,14 @@ const UserRoutes = require('./Routes/UserRoutes');
 const StoreRoutes = require('./Routes/StoreRoutes');
 const AddressRoutes = require('./Routes/AddressRoutes');
 const UserStoreRoutes = require('./Routes/UserStoreRoutes');
+const AddressStoreRoutes = require('./Routes/AddressStoreRoutes');
 
 app.use('/check-connectios', HelloWordRoutes);
 app.use('/user', UserRoutes);
 app.use('/store', StoreRoutes);
 app.use('/address', AddressRoutes);
 app.use('/user-store', UserStoreRoutes);
+app.use('/address-store', AddressStoreRoutes);
 
 app.listen(5000, () => {
     console.log('Server is runnin on http://localhost:5000');

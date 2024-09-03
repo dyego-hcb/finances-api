@@ -1,4 +1,8 @@
+// /Controllers/UserController.js
+
 const bcrypt = require('bcrypt');
+
+// SERVICES
 const UserService = require('../Services/UserServices');
 
 // DTOS
@@ -41,7 +45,7 @@ class UserController {
 
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            const registerUserDTO = new CreateUserDTO(name, cpf, birthDate, email, hashedPassword, new Date());
+            const registerUserDTO = new CreateUserDTO(name, cpf, birthDate, email, hashedPassword);
 
             const user = await UserService.registerUser(registerUserDTO);
 
@@ -68,8 +72,15 @@ class UserController {
 
             await CreateUserToken(user, req, res);
         } catch (error) {
-            console.error('Error in UserController.loginUser:', error);
-            res.status(401).json({ message: 'Authentication failed' });
+            if (error.message === 'Invalid credentials') {
+                return res.status(401).json({ message: 'Authentication failed' });
+            } else if (error.message === 'Unexpected error') {
+                return res.status(500).json({ message: 'Unexpected error' });
+            } else if (error.message === 'Token creation failed') {
+                return res.status(500).json({ message: 'Token creation failed' });
+            } else {
+                return res.status(401).json({ message: 'Authentication failed' });
+            }
         }
     }
 
@@ -174,7 +185,7 @@ class UserController {
                 return res.status(404).json({ message: "User not found!" });
             }
 
-            res.status(200).json(updatedUser);
+            res.status(200).json(updateUserDTO);
         } catch (error) {
             console.error('Error in UserController.updateUserById:', error);
             res.status(500).json({ error: 'An error occurred while updating the user' });
